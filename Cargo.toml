@@ -4,3 +4,7 @@ members = [
     "opord-parse",
     "mk-announce"
 ]
+
+[profile.release]
+lto = "yes"
+opt-level = "s"

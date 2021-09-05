@@ -1,13 +1,16 @@
-use std::{fs::{self, File}, path::Path};
+use std::{
+    fs::{self, File},
+    path::Path,
+};
 
 use argh::FromArgs;
-use eyre::Result;
+use eyre::{Context, Result};
 use handlebars::Handlebars;
 use opord_parse::{
     activity::{ActivityType, LabAudience, PTDay},
     opord_parser::OpordParser,
 };
-use tracing::{info};
+use tracing::info;
 use tracing_subscriber::EnvFilter;
 
 use crate::week_msg::{Activity, WeekMsg};
@@ -64,15 +67,18 @@ fn no_escape(x: &str) -> String {
 }
 
 fn generate_announcements(msg: &WeekMsg) -> Result<()> {
+    info!("Rendering announcements");
+
     let mut reg = Handlebars::new();
     reg.register_escape_fn(no_escape);
-    reg.register_template_file("template", "www/index.hbs")?;
+    reg.register_template_file("template", "mk-announce/www/index.hbs")
+        .context("could not open the handlebars file")?;
     reg.set_strict_mode(true);
 
+    let output_path = "mk-announce/www/render.html";
 
-    let output_path = "www/render.html";
-
-    let mut output_file = File::create(output_path)?;
+    let mut output_file =
+        File::create(output_path).context(format!("Could not create file {}", output_path))?;
     reg.render_to_write("template", &msg, &mut &mut output_file)?;
 
     info!("Created announcements at {}", output_path);
@@ -148,12 +154,12 @@ fn parse_and_export_opord(opord_path: &str) -> Result<WeekMsg> {
 
     let json_path = Path::new(opord_path).with_extension("json");
 
-    info!("Exporting data to {}", json_path.file_name().unwrap().to_str().unwrap());
+    info!(
+        "Exporting data to {}",
+        json_path.file_name().unwrap().to_str().unwrap()
+    );
 
-    fs::write(
-        json_path,
-        serde_json::to_string_pretty(&msg)?,
-    )?;
+    fs::write(json_path, serde_json::to_string_pretty(&msg)?)?;
 
     Ok(msg)
 }

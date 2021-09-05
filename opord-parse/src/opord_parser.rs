@@ -125,7 +125,7 @@ fn parse_activity(
     if name.contains("Leadership Laboratory") {
         let audience;
 
-        if name.starts_with("Make Up") {
+        if name.starts_with("Make Up") || name.starts_with("Make-Up") {
             return Ok(ActivityType::MULLAB(details));
         }
 
