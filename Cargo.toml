@@ -1,0 +1,6 @@
+[workspace]
+
+members = [
+    "opord-parse",
+    "mk-announce"
+]
