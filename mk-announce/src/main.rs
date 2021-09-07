@@ -134,10 +134,11 @@ fn parse_and_export_opord(opord_path: &str) -> Result<WeekMsg> {
     let res = parser.parse()?;
 
     let activities = res.activities();
+
     info!("Parsed {} activities", activities.len());
 
     let converted: Vec<Activity> = activities
-        .into_iter()
+        .iter()
         .map(|x| {
             let conv_activ = convert_activity(x);
             info!("{}", &conv_activ);
@@ -145,12 +146,7 @@ fn parse_and_export_opord(opord_path: &str) -> Result<WeekMsg> {
         })
         .collect();
 
-    let msg = WeekMsg::new(
-        res.week_num().clone(),
-        UNKNOWN.to_string(),
-        converted,
-        vec![],
-    );
+    let msg = WeekMsg::new(res.week_num(), UNKNOWN.to_string(), converted, vec![]);
 
     let json_path = Path::new(opord_path).with_extension("json");
 

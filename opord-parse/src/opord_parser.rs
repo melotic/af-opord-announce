@@ -136,7 +136,7 @@ fn parse_activity(
         } else if name.starts_with("Joint") {
             audience = LabAudience::Joint
         } else {
-            return Err(OpordParserError::InvalidLLABAudience(name).into());
+            return Err(OpordParserError::InvalidLLABAudience(name));
         }
 
         return Ok(ActivityType::LLAB(audience, details));
@@ -150,7 +150,7 @@ fn parse_activity(
         } else if name.starts_with("Wednesday/Thursday") {
             pt_day = PTDay::WTH;
         } else {
-            return Err(OpordParserError::InvalidPTDay(name).into());
+            return Err(OpordParserError::InvalidPTDay(name));
         }
 
         return Ok(ActivityType::PT(pt_day, details));
@@ -167,34 +167,34 @@ fn found_uod(line: &str) -> bool {
     line.trim() == "c. UOD"
 }
 
-fn get_location(line: &String) -> Result<String, OpordParserError> {
+fn get_location(line: &str) -> Result<String, OpordParserError> {
     let x = line.trim();
     const LOC_STR: &str = "Main Location:";
 
     match x.find(LOC_STR) {
         Some(loc_pos) => Ok(x[loc_pos + LOC_STR.len()..].trim().to_string()),
-        None => return Err(OpordParserError::InvalidLocationFormat(x.to_string()).into()),
+        None => Err(OpordParserError::InvalidLocationFormat(x.to_string())),
     }
 }
 
-fn get_name(line: &String) -> Result<String, OpordParserError> {
+fn get_name(line: &str) -> Result<String, OpordParserError> {
     let x = line.trim();
 
     if x.starts_with("Week") {
         match x.find('/') {
             Some(pos) => return Ok(x[pos + 1..].trim().to_string()),
-            None => return Err(OpordParserError::WeekMisionNameParseFail(x.to_string()).into()),
+            None => return Err(OpordParserError::WeekMisionNameParseFail(x.to_string())),
         }
     }
 
     Ok(x.to_string())
 }
 
-fn found_location(line: &String) -> bool {
+fn found_location(line: &str) -> bool {
     line.trim() == "d. Main Location"
 }
 
-fn get_uod(line: &String) -> String {
+fn get_uod(line: &str) -> String {
     let x = line.trim();
 
     // Format is usually GMC: OCPs.
