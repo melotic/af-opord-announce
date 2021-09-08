@@ -1,16 +1,10 @@
-use std::{
-    fs::File,
-    io::{BufRead, BufReader},
-    path::Path,
-};
-
 use crate::{
     activity::{ActivityDetails, ActivityType, LabAudience, PTDay, ParsedOpord},
     parser_error::OpordParserError,
 };
 
 pub struct OpordParser<'a> {
-    file_path: &'a Path,
+    opord: &'a str,
 }
 
 #[derive(PartialEq, Debug)]
@@ -25,32 +19,25 @@ enum State {
 }
 
 impl<'a> OpordParser<'a> {
-    pub fn new(file: &'a Path) -> Self {
-        Self { file_path: file }
+    pub fn new(opord: &'a str) -> Self {
+        Self { opord }
     }
 
-    pub fn parse(&self) -> Result<ParsedOpord, OpordParserError> {
-        let file = File::open(self.file_path)?;
-        let readr = BufReader::new(file);
-        let lines = readr.lines();
+    pub fn parse(&self) -> Result<ParsedOpord<'a>, OpordParserError> {
+        let lines = self.opord.lines();
 
         let mut state = State::ScanMission;
 
         // activity details
-        let mut name = String::new();
-        let mut uod = String::new();
-        let mut location = String::new();
+        let mut name = "";
+        let mut uod = "";
+        let mut location = "";
 
         let mut week_num = None;
 
         let mut result = vec![];
 
         for line in lines {
-            let line = match line {
-                Ok(x) => x,
-                Err(e) => return Err(e.into()),
-            };
-
             if week_num.is_none() && line.contains("Week") {
                 let line = line.trim();
 
@@ -65,38 +52,34 @@ impl<'a> OpordParser<'a> {
 
             match state {
                 State::ScanMission => {
-                    if found_mission(&line) {
+                    if found_mission(line) {
                         state = State::ReadMissionName;
                     }
                 }
                 State::ReadMissionName => {
-                    name = get_name(&line)?;
+                    name = get_name(line)?;
                     state = State::ScanUOD;
                 }
                 State::ScanUOD => {
-                    if found_uod(&line) {
+                    if found_uod(line) {
                         state = State::ReadUOD;
                     }
                 }
                 State::ReadUOD => {
-                    uod = get_uod(&line);
+                    uod = get_uod(line);
                     state = State::ScanLocation;
                 }
                 State::ScanLocation => {
-                    if found_location(&line) {
+                    if found_location(line) {
                         state = State::ReadLocation;
                     }
                 }
                 State::ReadLocation => {
-                    location = get_location(&line)?;
+                    location = get_location(line)?;
                     state = State::ActivityParseComplete;
                 }
                 State::ActivityParseComplete => {
                     result.push(parse_activity(name, uod, location)?);
-
-                    name = String::new();
-                    uod = String::new();
-                    location = String::new();
 
                     state = State::ScanMission;
                 }
@@ -115,11 +98,11 @@ impl<'a> OpordParser<'a> {
     }
 }
 
-fn parse_activity(
-    name: String,
-    uod: String,
-    location: String,
-) -> Result<ActivityType, OpordParserError> {
+fn parse_activity<'a>(
+    name: &'a str,
+    uod: &'a str,
+    location: &'a str,
+) -> Result<ActivityType<'a>, OpordParserError> {
     let details = ActivityDetails::new(location, uod);
 
     if name.contains("Leadership Laboratory") {
@@ -136,7 +119,7 @@ fn parse_activity(
         } else if name.starts_with("Joint") {
             audience = LabAudience::Joint
         } else {
-            return Err(OpordParserError::InvalidLLABAudience(name));
+            return Err(OpordParserError::InvalidLLABAudience(name.to_string()));
         }
 
         return Ok(ActivityType::LLAB(audience, details));
@@ -150,7 +133,7 @@ fn parse_activity(
         } else if name.starts_with("Wednesday/Thursday") {
             pt_day = PTDay::WTH;
         } else {
-            return Err(OpordParserError::InvalidPTDay(name));
+            return Err(OpordParserError::InvalidPTDay(name.to_string()));
         }
 
         return Ok(ActivityType::PT(pt_day, details));
@@ -167,43 +150,43 @@ fn found_uod(line: &str) -> bool {
     line.trim() == "c. UOD"
 }
 
-fn get_location(line: &str) -> Result<String, OpordParserError> {
+fn get_location(line: &str) -> Result<&str, OpordParserError> {
     let x = line.trim();
     const LOC_STR: &str = "Main Location:";
 
     match x.find(LOC_STR) {
-        Some(loc_pos) => Ok(x[loc_pos + LOC_STR.len()..].trim().to_string()),
+        Some(loc_pos) => Ok(x[loc_pos + LOC_STR.len()..].trim()),
         None => Err(OpordParserError::InvalidLocationFormat(x.to_string())),
     }
 }
 
-fn get_name(line: &str) -> Result<String, OpordParserError> {
+fn get_name(line: &str) -> Result<&str, OpordParserError> {
     let x = line.trim();
 
     if x.starts_with("Week") {
         match x.find('/') {
-            Some(pos) => return Ok(x[pos + 1..].trim().to_string()),
+            Some(pos) => return Ok(x[pos + 1..].trim()),
             None => return Err(OpordParserError::WeekMisionNameParseFail(x.to_string())),
         }
     }
 
-    Ok(x.to_string())
+    Ok(x)
 }
 
 fn found_location(line: &str) -> bool {
     line.trim() == "d. Main Location"
 }
 
-fn get_uod(line: &str) -> String {
+fn get_uod(line: &str) -> &str {
     let x = line.trim();
 
     // Format is usually GMC: OCPs.
     // can also be just "OCPs" as in the case of some POC labs..
     if let Some(colon_pos) = x.find(':') {
-        return x[colon_pos + 1..].trim().to_string();
+        return x[colon_pos + 1..].trim();
     }
 
-    x.to_string()
+    x
 }
 
 #[cfg(test)]

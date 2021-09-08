@@ -50,7 +50,10 @@ fn main() -> Result<()> {
     let opts: Options = argh::from_env();
 
     if let Some(opord_path) = opts.opord {
-        let msg = parse_and_export_opord(&opord_path)?;
+        // read the opord
+        let opord = fs::read_to_string(&opord_path).context("Failed to open the supplied OPORD")?;
+        let msg = parse_and_export_opord(&opord)?;
+        export_msg(&opord_path, &msg)?;
         generate_announcements(&msg)?;
     }
 
@@ -59,6 +62,18 @@ fn main() -> Result<()> {
         generate_announcements(&msg)?;
     }
 
+    Ok(())
+}
+
+fn export_msg(opord_path: &str, msg: &WeekMsg) -> Result<()> {
+    let json_path = Path::new(opord_path).with_extension("json");
+
+    info!(
+        "Exporting data to {}",
+        json_path.file_name().unwrap().to_str().unwrap()
+    );
+
+    fs::write(json_path, serde_json::to_string_pretty(&msg)?)?;
     Ok(())
 }
 
@@ -127,10 +142,8 @@ fn convert_activity(a: &ActivityType) -> Activity {
     )
 }
 
-fn parse_and_export_opord(opord_path: &str) -> Result<WeekMsg> {
-    info!("Attempting to parse OPORD: {}", &opord_path);
-
-    let parser = OpordParser::new(Path::new(opord_path));
+fn parse_and_export_opord(opord: &str) -> Result<WeekMsg> {
+    let parser = OpordParser::new(opord);
     let res = parser.parse()?;
 
     let activities = res.activities();
@@ -146,16 +159,10 @@ fn parse_and_export_opord(opord_path: &str) -> Result<WeekMsg> {
         })
         .collect();
 
-    let msg = WeekMsg::new(res.week_num(), UNKNOWN.to_string(), converted, vec![]);
-
-    let json_path = Path::new(opord_path).with_extension("json");
-
-    info!(
-        "Exporting data to {}",
-        json_path.file_name().unwrap().to_str().unwrap()
-    );
-
-    fs::write(json_path, serde_json::to_string_pretty(&msg)?)?;
-
-    Ok(msg)
+    Ok(WeekMsg::new(
+        res.week_num(),
+        UNKNOWN.to_string(),
+        converted,
+        vec![],
+    ))
 }

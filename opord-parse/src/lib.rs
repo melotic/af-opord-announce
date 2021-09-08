@@ -4,7 +4,6 @@ pub mod parser_error;
 
 #[cfg(test)]
 mod tests {
-    use std::path::Path;
 
     use crate::{
         activity::{ActivityDetails, ActivityType, LabAudience, PTDay},
@@ -13,33 +12,30 @@ mod tests {
 
     #[test]
     fn week1() {
-        let parser = OpordParser::new(Path::new("Week 1.txt"));
-
+        let opord = std::fs::read_to_string("Week 1.txt").expect("err opening opord");
+        let parser = OpordParser::new(&opord);
         let parsed = parser.parse().expect("failed to parse.");
 
         let result = parsed.activities();
 
         let llab = ActivityType::LLAB(
             LabAudience::Joint,
-            ActivityDetails::new("Torg 2150".to_string(), "White Shirt/Blues".to_string()),
+            ActivityDetails::new("Torg 2150", "White Shirt/Blues"),
         );
 
         let pt = ActivityType::PT(
             PTDay::WTH,
-            ActivityDetails::new(
-                "Drillfield".to_string(),
-                "AF PTGs / VTCC PT Gear".to_string(),
-            ),
+            ActivityDetails::new("Drillfield", "AF PTGs / VTCC PT Gear"),
         );
 
         let mullab = ActivityType::MULLAB(ActivityDetails::new(
-            "Mil Bldg Rom 208".to_string(),
-            "White Shirt/Blues".to_string(),
+            "Mil Bldg Rom 208",
+            "White Shirt/Blues",
         ));
 
         let picnic = ActivityType::Unknown(ActivityDetails::new(
-            "Blacksburg Municipal Park Shelter 9".to_string(),
-            "CITS".to_string(),
+            "Blacksburg Municipal Park Shelter 9",
+            "CITS",
         ));
 
         println!("{:#?}", result);

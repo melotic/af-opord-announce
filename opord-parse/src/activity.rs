@@ -1,11 +1,11 @@
 #[derive(PartialEq, Debug)]
-pub struct ParsedOpord {
+pub struct ParsedOpord<'a> {
     week_num: u8,
-    activities: Vec<ActivityType>,
+    activities: Vec<ActivityType<'a>>,
 }
 
-impl ParsedOpord {
-    pub fn new(week_num: u8, activities: Vec<ActivityType>) -> Self {
+impl<'a> ParsedOpord<'a> {
+    pub fn new(week_num: u8, activities: Vec<ActivityType<'a>>) -> Self {
         Self {
             week_num,
             activities,
@@ -24,11 +24,11 @@ impl ParsedOpord {
 }
 
 #[derive(PartialEq, Debug)]
-pub enum ActivityType {
-    Unknown(ActivityDetails),
-    PT(PTDay, ActivityDetails),
-    LLAB(LabAudience, ActivityDetails),
-    MULLAB(ActivityDetails),
+pub enum ActivityType<'a> {
+    Unknown(ActivityDetails<'a>),
+    PT(PTDay, ActivityDetails<'a>),
+    LLAB(LabAudience, ActivityDetails<'a>),
+    MULLAB(ActivityDetails<'a>),
 }
 
 #[derive(PartialEq, Debug)]
@@ -45,23 +45,23 @@ pub enum PTDay {
 }
 
 #[derive(PartialEq, Debug)]
-pub struct ActivityDetails {
-    location: String,
-    uniform: String,
+pub struct ActivityDetails<'a> {
+    location: &'a str,
+    uniform: &'a str,
 }
 
-impl ActivityDetails {
-    pub fn new(location: String, uniform: String) -> Self {
+impl<'a> ActivityDetails<'a> {
+    pub fn new(location: &'a str, uniform: &'a str) -> Self {
         Self { location, uniform }
     }
 
     /// Get a reference to the activity details's location.
     pub fn location(&self) -> &str {
-        self.location.as_str()
+        self.location
     }
 
     /// Get a reference to the activity details's uniform.
     pub fn uniform(&self) -> &str {
-        self.uniform.as_str()
+        self.uniform
     }
 }

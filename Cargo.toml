@@ -7,4 +7,3 @@ members = [
 
 [profile.release]
 lto = "yes"
-opt-level = "s"
