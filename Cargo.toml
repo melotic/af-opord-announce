@@ -2,7 +2,8 @@
 
 members = [
     "opord-parse",
-    "mk-announce"
+    "mk-announce",
+    "merge-announce"
 ]
 
 [profile.release]

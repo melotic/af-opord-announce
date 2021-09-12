@@ -132,6 +132,8 @@ fn parse_activity<'a>(
             pt_day = PTDay::MT;
         } else if name.starts_with("Wednesday/Thursday") {
             pt_day = PTDay::WTH;
+        } else if name.contains("Remedial") {
+            pt_day = PTDay::Remedial;
         } else {
             return Err(OpordParserError::InvalidPTDay(name.to_string()));
         }
@@ -156,7 +158,7 @@ fn get_location(line: &str) -> Result<&str, OpordParserError> {
 
     match x.find(LOC_STR) {
         Some(loc_pos) => Ok(x[loc_pos + LOC_STR.len()..].trim()),
-        None => Err(OpordParserError::InvalidLocationFormat(x.to_string())),
+        None => Ok(x),
     }
 }
 

@@ -6,6 +6,7 @@ use std::fmt::Display;
 pub struct WeekMsg {
     week_num: u8,
     opord_link: String,
+    countdowns: Vec<Countdown>,
     activities: Vec<Activity>,
     announcements: Vec<Announcement>,
 }
@@ -14,16 +15,34 @@ impl WeekMsg {
     pub fn new(
         week_num: u8,
         opord_link: String,
+        countdowns: Vec<Countdown>,
         activities: Vec<Activity>,
         announcements: Vec<Announcement>,
     ) -> Self {
         Self {
             week_num,
             opord_link,
+            countdowns,
             activities,
             announcements,
         }
     }
+
+    /// Get a mutable reference to the week msg's announcements.
+    pub fn announcements_mut(&mut self) -> &mut Vec<Announcement> {
+        &mut self.announcements
+    }
+
+    /// Get a reference to the week msg's announcements.
+    pub fn announcements(&self) -> &[Announcement] {
+        self.announcements.as_slice()
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct Countdown {
+    text: String,
+    date: String
 }
 
 #[derive(Serialize, Deserialize)]
@@ -59,7 +78,7 @@ impl Display for Activity {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Announcement {
     title: String,
     subtitle: String,

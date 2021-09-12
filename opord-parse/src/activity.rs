@@ -42,6 +42,7 @@ pub enum LabAudience {
 pub enum PTDay {
     MT,
     WTH,
+    Remedial,
 }
 
 #[derive(PartialEq, Debug)]

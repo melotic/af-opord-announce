@@ -4,18 +4,17 @@ use std::{
 };
 
 use argh::FromArgs;
+use chrono::{Datelike, Local, NaiveDate};
+use chrono_humanize::{Accuracy, HumanTime, Tense};
 use eyre::{Context, Result};
-use handlebars::Handlebars;
+use handlebars::{Handlebars, Helper, JsonRender, Output, RenderContext, RenderError};
 use opord_parse::{
     activity::{ActivityType, LabAudience, PTDay},
     opord_parser::OpordParser,
+    week_msg::{Activity, WeekMsg},
 };
 use tracing::info;
 use tracing_subscriber::EnvFilter;
-
-use crate::week_msg::{Activity, WeekMsg};
-
-mod week_msg;
 
 const UNKNOWN: &str = "[UNKNOWN]";
 
@@ -81,11 +80,41 @@ fn no_escape(x: &str) -> String {
     x.to_string()
 }
 
+fn format_helper(
+    h: &Helper,
+    _: &Handlebars,
+    _: &handlebars::Context,
+    _: &mut RenderContext,
+    out: &mut dyn Output,
+) -> Result<(), RenderError> {
+    let date_str = h
+        .param(0)
+        .ok_or_else(|| RenderError::new("param 0 is req'd"))?
+        .value()
+        .render();
+
+    info!("{}", date_str);
+
+    let date = NaiveDate::parse_from_str(&date_str, "%m-%d-%Y")
+        .map_err(|_| RenderError::new("invalid date"))?;
+
+    let today = Local::today();
+    let today = NaiveDate::from_ymd(today.year(), today.month(), today.day());
+
+    let diff = date - today;
+    let ht = HumanTime::from(diff);
+
+    out.write(&ht.to_text_en(Accuracy::Precise, Tense::Present))?;
+
+    Ok(())
+}
+
 fn generate_announcements(msg: &WeekMsg) -> Result<()> {
     info!("Rendering announcements");
 
     let mut reg = Handlebars::new();
     reg.register_escape_fn(no_escape);
+    reg.register_helper("format_date", Box::new(format_helper));
     reg.register_template_file("template", "mk-announce/www/index.hbs")
         .context("could not open the handlebars file")?;
     reg.set_strict_mode(true);
@@ -115,6 +144,7 @@ fn convert_activity(a: &ActivityType) -> Activity {
             name = match day {
                 PTDay::MT => "M/T PT",
                 PTDay::WTH => "W/TH PT",
+                PTDay::Remedial => "Hero Workout",
             };
 
             deets = details;
@@ -162,6 +192,7 @@ fn parse_and_export_opord(opord: &str) -> Result<WeekMsg> {
     Ok(WeekMsg::new(
         res.week_num(),
         UNKNOWN.to_string(),
+        vec![],
         converted,
         vec![],
     ))

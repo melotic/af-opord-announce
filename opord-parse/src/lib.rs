@@ -1,6 +1,7 @@
 pub mod activity;
 pub mod opord_parser;
 pub mod parser_error;
+pub mod week_msg;
 
 #[cfg(test)]
 mod tests {
