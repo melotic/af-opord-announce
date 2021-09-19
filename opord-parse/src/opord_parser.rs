@@ -38,9 +38,13 @@ impl<'a> OpordParser<'a> {
         let mut result = vec![];
 
         for line in lines {
-            if week_num.is_none() && line.contains("Week") {
-                let line = line.trim();
+            let line = line.trim();
 
+            if line.is_empty() {
+                continue;
+            }
+
+            if week_num.is_none() && line.contains("Week") {
                 if let Some(slash_pos) = line.find('/') {
                     // find the space
                     if let Some(space_pos) = line.find(' ') {
@@ -149,11 +153,11 @@ fn found_mission(line: &str) -> bool {
 }
 
 fn found_uod(line: &str) -> bool {
-    line.trim() == "c. UOD"
+    line == "c. UOD"
 }
 
 fn get_location(line: &str) -> Result<&str, OpordParserError> {
-    let x = line.trim();
+    let x = line;
     const LOC_STR: &str = "Main Location:";
 
     match x.find(LOC_STR) {
@@ -163,7 +167,7 @@ fn get_location(line: &str) -> Result<&str, OpordParserError> {
 }
 
 fn get_name(line: &str) -> Result<&str, OpordParserError> {
-    let x = line.trim();
+    let x = line;
 
     if x.starts_with("Week") {
         match x.find('/') {
@@ -176,11 +180,11 @@ fn get_name(line: &str) -> Result<&str, OpordParserError> {
 }
 
 fn found_location(line: &str) -> bool {
-    line.trim() == "d. Main Location"
+    line == "d. Main Location"
 }
 
 fn get_uod(line: &str) -> &str {
-    let x = line.trim();
+    let x = line;
 
     // Format is usually GMC: OCPs.
     // can also be just "OCPs" as in the case of some POC labs..

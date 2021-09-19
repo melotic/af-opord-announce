@@ -37,9 +37,19 @@ impl WeekMsg {
     pub fn announcements(&self) -> &[Announcement] {
         self.announcements.as_slice()
     }
+
+    /// Get a mutable reference to the week msg's countdowns.
+    pub fn countdowns_mut(&mut self) -> &mut Vec<Countdown> {
+        &mut self.countdowns
+    }
+
+    /// Get a reference to the week msg's countdowns.
+    pub fn countdowns(&self) -> &[Countdown] {
+        self.countdowns.as_slice()
+    }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Countdown {
     text: String,
     date: String

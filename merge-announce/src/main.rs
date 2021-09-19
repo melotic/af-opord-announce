@@ -31,6 +31,7 @@ fn main() -> Result<()> {
     let mut dst = open_msg(&opts.dst)?;
 
     *dst.announcements_mut() = src.announcements().to_vec();
+    *dst.countdowns_mut() = src.countdowns().to_vec();
 
     fs::write(
         opts.dst,
