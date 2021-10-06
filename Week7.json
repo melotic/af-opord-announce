@@ -1,0 +1,68 @@
+{
+  "week_num": 7,
+  "opord_link": "https://canvas.vt.edu/courses/134666/files/folder/OPORDS%20%26%20Weekly%20Announcements/Current%20OPORD?preview=20079748",
+  "countdowns": [
+    {
+      "text": "The PFA is in",
+      "date": "10-20-2021"
+    },
+    {
+      "text": "Warrior day is in",
+      "date": "10-30-2021"
+    }
+  ],
+  "activities": [
+    {
+      "name": "M/T PT",
+      "event": "Nutrition Brief",
+      "location": "Assigned Classrooms",
+      "uniform": "AF PTGs / VTCC PT Gear"
+    },
+    {
+      "name": "GMC LLAB",
+      "event": "ORI & Flight Debriefs",
+      "location": "Drillfield",
+      "uniform": "White Shirt/Blues"
+    },
+    {
+      "name": "POC LLAB",
+      "event": "ORI & Feedback",
+      "location": "Drillfield/Torg 2150",
+      "uniform": "Blues/White Shirt"
+    },
+    {
+      "name": "W/TH PT",
+      "event": "WARRIOR PT",
+      "location": "O-COURSE",
+      "uniform": "SQ/VTCC Shirt and OCP trousers"
+    },
+    {
+      "name": "MULLAB",
+      "event": "ORI & Performance Kahoot",
+      "location": "Mil Bldg Room 208",
+      "uniform": "Blues or White Shirt"
+    }
+  ],
+  "announcements": [
+    {
+      "title": "Nutrition Brief M/T Classrooms",
+      "subtitle": "",
+      "content": "All of <strong>Monday PT</strong> will meet in Surge 104C. Seating will progress from SQ1 in the first rows depending on the room layout followed by SQ2 , SQ3, SQ4, SQ5, SQ6 for accountability purposes with ABG in back behind TRG.<br/><br/> <strong>Tuesday PT</strong> will meet in the following rooms by squadron: MCB 304 - SQ 1/2 | MCB 307 - SQ 3/4 | MCB 321 - SQ 5/6 | MCB 332 - ABG"
+    },
+    {
+      "title": "Warrior PT W/TH",
+      "subtitle": "Read the CONOP before PT W/TH",
+      "content": "On PT W/TH, we will be having a Warrior PT day at the O-Course. Make sure you read the <a href=\"https://docs.google.com/document/d/16X_axDcywkQCRhIoC-9Eyzs02d4HfKMDYKdtG-QFCVw/edit\">CONOP</a> before you attend PT to understand how PT will be organized. Pass up questions to your chain of command."
+    },
+    {
+      "title": "ORI Resources",
+      "subtitle": "",
+      "content": "The ORI (Open Ranks Inspection) will be on Tuesday, 5 Oct, during LLAB. To prepare for the ORI, the Wing IG, C/Cook has attached resources. If you have any questions, pass them up your chain. <a href=\"https://docs.google.com/presentation/d/11AyhueDujV8jKF2bAZ4toNzSwbSmQ9pWcwP9vTpgcSw/edit?usp=gmail#slide=id.g703a78b68b_0_0\">ORI PPT</a> - <a href=\"https://docs.google.com/document/d/1XWDpxH6smY41UcBUO9qr9aAWyP7hFk7KTWFQEhvVHyA/edit?usp=gmail\">ORI Procedures</a>"
+    },
+    {
+      "title": "Concessions & Parking Volunteer Sign-ups",
+      "subtitle": "",
+      "content": "If you wish to volunteer to help out concessions or parking during football games, please fill out the concessions spreadsheet <a href=\"https://docs.google.com/spreadsheets/d/19hPp2b2tilUUX03tQ2LLjZ5iQa-Q2FmOgq1IsMpcEQg/edit?usp=sharing\">here</a>, or the parking spreadsheet <a href=\"https://docs.google.com/spreadsheets/d/1f5Sq8LF54MVVkPItnjDrgWqECB2dFuseEbprQRiLW1c/edit?usp=sharing\">here</a>. Volunteering counts for Honor Flight points. This is not mandatory and all cadets are encouraged to volunteer."
+    }
+  ]
+}
